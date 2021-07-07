@@ -1,0 +1,54 @@
+﻿@page "/StudentsDetails"
+@inject Service.IDataBaseService db
+
+
+<h3>Students Details</h3>
+
+<EditForm Model="@Student" OnValidSubmit="@AddStudent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>First Name</label>
+        <InputText @bind-Value="Student.FirstName" class="form-control" />
+        <ValidationMessage For="@(() => Student.FirstName)" />
+    </div>
+
+    <div>
+        <label>Last Name</label>
+        <InputText @bind-Value="Student.LastName" class="form-control" />
+        <ValidationMessage For="@(() => Student.LastName)" />
+    </div>
+
+    <div>
+        <label>Birthday</label>
+        <InputDate @bind-Value="Student.Birthday" class="form-control" />
+        <ValidationMessage For="@(() => Student.Birthday)" />
+    </div>
+
+    <div>
+        <label>Studies</label>
+        <InputText @bind-Value="Student.Studies" class="form-control" />
+        <ValidationMessage For="@(() => Student.Studies)" />
+    </div>
+
+    <br />
+    <input type="submit" value="Save" class="btn btn-secondary" />
+</EditForm>
+<br />
+<a href="/students" class="btn btn-secondary">Return</a>
+
+@code{
+    Student Student;
+
+    protected override void OnInitialized()
+    {
+        Student = new Student();
+    }
+
+    protected void AddStudent()
+    {
+        db.AddStudent(Student);
+        Student = new Student();     
+    }
+}

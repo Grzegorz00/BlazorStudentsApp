@@ -1,0 +1,73 @@
+﻿@page "/students"
+@inject IJSRuntime js
+@inject Service.IDataBaseService db
+
+<h3>Students</h3>
+<br />
+<a href="/StudentsDetails" class="btn btn-secondary">Add student</a>
+<br />
+<br />
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th @onclick="@(() => @Sort("FirstName"))">First name</th>
+            <th @onclick="@(() => @Sort("LastName"))">Last name</th>
+            <th @onclick="@(() => @Sort("Birthday"))">Birthday</th>
+            <th @onclick="@(() => @Sort("Studies"))">Studies</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in list)
+        {
+            <tr>
+                <td>
+                    @s.FirstName
+                </td>
+                <td>
+                    @s.LastName
+                </td>
+                <td>
+                    @s.Birthday.ToString("MM/dd/yyyy")
+                </td>
+                <td>
+                    @s.Studies
+                </td>
+                <td>
+                    <button class="btn btn-danger" @onclick="() => DeleteStudent(s)">x</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+@code{
+
+    protected List<Student> list;
+    private bool IsSortedAscending = true;
+
+    protected override void OnInitialized()
+    {
+        list = db.GetStudents();
+    }
+
+    protected async Task DeleteStudent(Student student)
+    {
+        var confirmed = await js.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed)
+        {
+            db.DeleteStudent(student);
+        }
+    }
+
+    protected async Task Sort(String columnName)
+    {
+        list = db.GetStudents().OrderBy(x =>
+        x.GetType()
+        .GetProperty(columnName)
+        .GetValue(x,null)
+            ).ToList();
+    }
+}
